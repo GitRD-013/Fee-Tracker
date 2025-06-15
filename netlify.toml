@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# Optional: You can specify a Node.js version if needed,
+# but Netlify's default usually works well with Next.js.
+# [build.environment]
+#   NODE_VERSION = "18" # or "20"
+
+# The Netlify Next.js runtime automatically handles API routes,
+# server components, image optimization, etc.
+# Explicit function configuration is typically not needed for standard Next.js features.
