@@ -1,0 +1,29 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Students collection
+    // Users can only manage their own student documents.
+    match /students/{studentId} {
+      // Allow read and delete if the document's userId matches the authenticated user's UID.
+      allow read, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+
+      // Allow create if the new document's userId matches the authenticated user's UID.
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+
+      // Allow update if both the existing document's userId and the new document's userId
+      // (if provided in the update) match the authenticated user's UID.
+      // This also ensures that the userId field itself cannot be changed to someone else's UID during an update.
+      allow update: if request.auth != null && resource.data.userId == request.auth.uid
+                      && (request.resource.data.userId == null || request.resource.data.userId == request.auth.uid);
+
+      // Payments subcollection
+      // Users can only manage payments for their own students.
+      match /payments/{paymentId} {
+        allow read, write, delete: if request.auth != null && get(/databases/$(database)/documents/students/$(studentId)).data.userId == request.auth.uid;
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow only the specific authenticated user to read/write their profile pictures
+    // The {studentId} in the path should ideally match the authenticated user's ID
+    // or some other identifier they own, if you had multiple users.
+    // For a single-user app as specified, checking their email is sufficient.
+    match /profilePictures/{studentId}/{allPaths=**} {
+      allow read: if request.auth != null; // Allow any authenticated user to read (e.g. for displaying images)
+                                         // If stricter, make it: if request.auth.token.email == "rupamdebnath013@gmail.com";
+      allow write, delete: if request.auth != null && request.auth.token.email == "rupamdebnath013@gmail.com";
+    }
+
+    // Deny access to any other paths by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
